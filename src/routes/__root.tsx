@@ -12,6 +12,10 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { AppSidebar } from "@/components/app-sidebar";
+import { AiDisclaimer } from "@/components/ai-disclaimer";
+import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { Toaster } from "@/components/ui/sonner";
 
 function NotFoundComponent() {
   return (
@@ -75,27 +79,32 @@ function ErrorComponent({ error, reset }: ErrorComponentProps) {
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
   head: () => ({
-    // Replace these placeholders with the app's name and description when first building the app.
-    // Each content route, / included, must still set its own head(). Never add og:image or
-    // twitter:image here: every page without its own would inherit the root's preview image.
+    // Each content route, / included, sets its own head(). Never add og:image here.
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "AI Workplace Productivity Assistant" },
+      {
+        name: "description",
+        content: "AI-powered email writing, research summaries and a workplace chatbot for professionals.",
+      },
+      { property: "og:title", content: "AI Workplace Productivity Assistant" },
+      {
+        property: "og:description",
+        content: "AI-powered email writing, research summaries and a workplace chatbot for professionals.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:site", content: "@Lovable" },
     ],
     links: [
+      { rel: "stylesheet", href: appCss },
+      { rel: "preconnect", href: "https://fonts.googleapis.com" },
+      { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
         rel: "stylesheet",
-        href: appCss,
+        href: "https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Sora:wght@500;600;700&display=swap",
       },
-      { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
+      { rel: "icon", type: "image/png", href: "/favicon.png" },
     ],
   }),
   shellComponent: RootShell,
@@ -123,8 +132,29 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <Outlet />
+      <SidebarProvider>
+        <AppSidebar />
+        <SidebarInset className="flex h-svh flex-col overflow-hidden bg-background">
+          <header className="flex h-14 shrink-0 items-center gap-3 border-b bg-card/70 px-4 backdrop-blur">
+            <SidebarTrigger className="text-muted-foreground hover:text-foreground" />
+            <span className="h-5 w-px bg-border" />
+            <span className="truncate font-display text-sm font-semibold text-foreground">
+              AI Workplace Productivity Assistant
+            </span>
+          </header>
+          <div className="min-h-0 flex-1 overflow-y-auto">
+            {/* Required: nested routes render here. */}
+            <Outlet />
+            <div className="border-t bg-card/70 px-4 py-3 md:hidden">
+              <AiDisclaimer />
+            </div>
+          </div>
+          <footer className="hidden shrink-0 border-t bg-card/70 px-4 py-2.5 md:block">
+            <AiDisclaimer className="mx-auto max-w-6xl" />
+          </footer>
+        </SidebarInset>
+      </SidebarProvider>
+      <Toaster position="top-right" />
     </QueryClientProvider>
   );
 }

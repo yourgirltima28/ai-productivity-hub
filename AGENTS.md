@@ -28,3 +28,10 @@ use the editor.
   own key and store it in Secrets.
 - **Secrets.** Lovable manages them. Do not put secret values in the repo.
 <!-- LOVABLE:END -->
+
+## Project rules
+
+- AI calls go through Lovable AI Gateway from server code only: one-shot features use `createServerFn` in `src/lib/ai/generate.functions.ts`, streaming chat uses the `/api/chat` server route; gateway helpers live in `src/lib/ai/*.server.ts`. Why: keeps the API key off the browser with no separate backend.
+- Feature prompts and input/output schemas live in `src/lib/ai/prompts.ts` (pure, unit-tested). Why: one place to tune AI behaviour per feature.
+- No database, auth or server-side storage; preferences use browser localStorage via `useSettings`. Why: user requirement for a lightweight frontend-only app.
+- Chat UI is composed from AI Elements in `src/components/ai-elements/`. Why: standard streaming chat primitives.
